@@ -25,6 +25,18 @@ func (h *Handlers) RegisterRoutesTo(router gin.IRouter) {
 	router.GET("/health", wrapHandler(h.handleGetHealth))
 	router.POST("/dummy", wrapHandler(h.handlePostDummy))
 
+	router.POST("/aliases", wrapHandler(h.handleCreateAlias))
+	router.DELETE("/aliases/:alias", wrapHandler(h.handleDropAlias))
+	router.PUT("/aliases/:alias", wrapHandler(h.handleAlterAlias))
+
+	collections := router.Group("/collections/:collection")
+	indexes := collections.Group("/indexes")
+	indexes.POST("", wrapHandler(h.handleCreateIndex))
+	indexes.DELETE("/:field", wrapHandler(h.handleDropIndex))
+	indexes.GET("/:field/info", wrapHandler(h.handleDescribeIndex))
+	indexes.GET("/:field/state", wrapHandler(h.handleGetIndexState))
+	indexes.GET("/:field/build-progress", wrapHandler(h.handleGetIndexBuildProgress))
+
 	router.POST("/entities", wrapHandler(h.handleInsert))
 	router.DELETE("/entities", wrapHandler(h.handleDelete))
 	router.GET("/entities", wrapHandler(h.handleSearchAndQuery))
@@ -45,6 +57,35 @@ func (h *Handlers) handlePostDummy(c *gin.Context) (interface{}, error) {
 		return nil, fmt.Errorf("%w: parse body failed: %v", errBadRequest, err)
 	}
 	return h.proxy.Dummy(c, &req)
+}
+
+func (h *Handlers) handleCreateAlias(c *gin.Context) (interface{}, error) {
+	req := milvuspb.CreateAliasRequest{}
+	err := shouldBind(c, &req)
+	if err != nil {
+		return nil, fmt.Errorf("%w: parse body failed: %v", errBadRequest, err)
+	}
+	return h.proxy.CreateAlias(c, &req)
+}
+
+func (h *Handlers) handleDropAlias(c *gin.Context) (interface{}, error) {
+	req := milvuspb.DropAliasRequest{}
+	err := shouldBind(c, &req)
+	if err != nil {
+		return nil, fmt.Errorf("%w: parse body failed: %v", errBadRequest, err)
+	}
+	req.Alias = c.Param("alias")
+	return h.proxy.DropAlias(c, &req)
+}
+
+func (h *Handlers) handleAlterAlias(c *gin.Context) (interface{}, error) {
+	req := milvuspb.AlterAliasRequest{}
+	err := shouldBind(c, &req)
+	if err != nil {
+		return nil, fmt.Errorf("%w: parse body failed: %v", errBadRequest, err)
+	}
+	req.Alias = c.Param("alias")
+	return h.proxy.AlterAlias(c, &req)
 }
 
 func (h *Handlers) handleInsert(c *gin.Context) (interface{}, error) {
