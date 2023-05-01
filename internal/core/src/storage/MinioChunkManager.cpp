@@ -79,6 +79,7 @@ MinioChunkManager::InitSDKAPI(RemoteStorageType type) {
     const size_t initCount = init_count_++;
     if (initCount == 0) {
         sdk_options_.httpOptions.installSigPipeHandler = true;
+        sdk_options_.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Info;
         Aws::InitAPI(sdk_options_);
     }
 }
