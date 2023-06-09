@@ -132,7 +132,7 @@ MinioChunkManager::BuildS3Client(const StorageConfig& storage_config, const Aws:
         client_ = std::make_shared<Aws::S3::S3Client>(
             Aws::Auth::AWSCredentials(ConvertToAwsString(storage_config.access_key_id),
                                       ConvertToAwsString(storage_config.access_key_value)),
-            config, Aws::Client::AWSAuthV4Signer::PayloadSigningPolicy::Never, false);
+            config, Aws::Client::AWSAuthV4Signer::PayloadSigningPolicy::Never, true);
     }
 }
 
