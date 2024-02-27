@@ -587,6 +587,8 @@ github.com/milvus-io/milvus-proto/go-api/v2 v2.3.8 h1:8L9DD6UpApUMZOC/rhK/rUIfnV
 github.com/milvus-io/milvus-proto/go-api/v2 v2.3.8/go.mod h1:1OIl0v5PQeNxIJhCvY+K55CBUOYDZevw9g9380u1Wek=
 github.com/milvus-io/pulsar-client-go v0.6.10 h1:eqpJjU+/QX0iIhEo3nhOqMNXL+TyInAs1IAHZCrCM/A=
 github.com/milvus-io/pulsar-client-go v0.6.10/go.mod h1:lQqCkgwDF8YFYjKA+zOheTk1tev2B+bKj5j7+nm8M1w=
+github.com/milvus-io/tencentcloud-sdk-go/tencentcloud/common v1.0.862-patch2 h1:K7OwDfCBc2zP9UKswfrfu/Ue/YGDq1Gp2WYdkpfOvJQ=
+github.com/milvus-io/tencentcloud-sdk-go/tencentcloud/common v1.0.862-patch2/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/minio/asm2plan9s v0.0.0-20200509001527-cdd76441f9d8 h1:AMFGa4R4MiIpspGNG7Z948v4n35fFGB3RR3G/ry4FWs=
 github.com/minio/asm2plan9s v0.0.0-20200509001527-cdd76441f9d8/go.mod h1:mC1jAcsrzbxHt8iiaC+zU4b1ylILSosueou12R++wfY=
 github.com/minio/c2goasm v0.0.0-20190812172519-36a3d3bbc4f3 h1:+n/aFZefKZp7spd8DFdX7uMikMLXX4oubIzJF4kv/wI=
