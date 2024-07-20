@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -19,6 +20,7 @@ import (
 	"github.com/milvus-io/milvus/internal/types"
 	"github.com/milvus-io/milvus/pkg/common"
 	"github.com/milvus-io/milvus/pkg/log"
+	"github.com/milvus-io/milvus/pkg/metrics"
 	"github.com/milvus-io/milvus/pkg/util/merr"
 	"github.com/milvus-io/milvus/pkg/util/metric"
 )
@@ -792,6 +794,8 @@ func (h *HandlersV1) upsert(c *gin.Context) {
 }
 
 func (h *HandlersV1) search(c *gin.Context) {
+	phaseDecodeBegin := time.Now()
+
 	httpReq := SearchReq{
 		DbName: DefaultDbName,
 		Limit:  100,
@@ -851,6 +855,12 @@ func (h *HandlersV1) search(c *gin.Context) {
 		GuaranteeTimestamp: BoundedTimestamp,
 		Nq:                 int64(1),
 	}
+
+	phaseDecodeEnd := time.Now()
+	metrics.RestfulV1SearchReqLatency.WithLabelValues(
+		metrics.PhaseDecode,
+	).Observe(float64(phaseDecodeEnd.Sub(phaseDecodeBegin).Milliseconds()))
+
 	username, _ := c.Get(ContextUsername)
 	ctx := proxy.NewContextWithMetadata(c, username.(string), req.DbName)
 	if err := checkAuthorization(ctx, c, &req); err != nil {
@@ -863,6 +873,11 @@ func (h *HandlersV1) search(c *gin.Context) {
 	if err == nil {
 		err = merr.Error(response.GetStatus())
 	}
+	phaseSearchEnd := time.Now()
+	metrics.RestfulV1SearchReqLatency.WithLabelValues(
+		metrics.PhaseSearch,
+	).Observe(float64(phaseSearchEnd.Sub(phaseDecodeEnd).Milliseconds()))
+
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{HTTPReturnCode: merr.Code(err), HTTPReturnMessage: err.Error()})
 	} else {
@@ -882,4 +897,9 @@ func (h *HandlersV1) search(c *gin.Context) {
 			}
 		}
 	}
+	phaseEncodeEnd := time.Now()
+	metrics.RestfulV1SearchReqLatency.WithLabelValues(
+		metrics.PhaseEncode,
+	).Observe(float64(phaseEncodeEnd.Sub(phaseSearchEnd).Milliseconds()))
+
 }
