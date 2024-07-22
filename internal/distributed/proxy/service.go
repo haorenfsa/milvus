@@ -169,29 +169,29 @@ func (s *Server) registerHTTPServer() {
 func (s *Server) startHTTPServer(errChan chan error) {
 	defer s.wg.Done()
 	ginHandler := gin.New()
-	ginLogger := gin.LoggerWithConfig(gin.LoggerConfig{
-		SkipPaths: proxy.Params.ProxyCfg.GinLogSkipPaths.GetAsStrings(),
-		Formatter: func(param gin.LogFormatterParams) string {
-			if param.Latency > time.Minute {
-				param.Latency = param.Latency.Truncate(time.Second)
-			}
-			traceID, ok := param.Keys["traceID"]
-			if !ok {
-				traceID = ""
-			}
-			return fmt.Sprintf("[%v] [GIN] [%s] [traceID=%s] [code=%3d] [latency=%v] [client=%s] [method=%s] [error=%s]\n",
-				param.TimeStamp.Format("2006/01/02 15:04:05.000 Z07:00"),
-				param.Path,
-				traceID,
-				param.StatusCode,
-				param.Latency,
-				param.ClientIP,
-				param.Method,
-				param.ErrorMessage,
-			)
-		},
-	})
-	ginHandler.Use(ginLogger, gin.Recovery())
+	// ginLogger := gin.LoggerWithConfig(gin.LoggerConfig{
+	// 	SkipPaths: proxy.Params.ProxyCfg.GinLogSkipPaths.GetAsStrings(),
+	// 	Formatter: func(param gin.LogFormatterParams) string {
+	// 		if param.Latency > time.Minute {
+	// 			param.Latency = param.Latency.Truncate(time.Second)
+	// 		}
+	// 		traceID, ok := param.Keys["traceID"]
+	// 		if !ok {
+	// 			traceID = ""
+	// 		}
+	// 		return fmt.Sprintf("[%v] [GIN] [%s] [traceID=%s] [code=%3d] [latency=%v] [client=%s] [method=%s] [error=%s]\n",
+	// 			param.TimeStamp.Format("2006/01/02 15:04:05.000 Z07:00"),
+	// 			param.Path,
+	// 			traceID,
+	// 			param.StatusCode,
+	// 			param.Latency,
+	// 			param.ClientIP,
+	// 			param.Method,
+	// 			param.ErrorMessage,
+	// 		)
+	// 	},
+	// })
+	ginHandler.Use(gin.Recovery())
 	ginHandler.Use(func(c *gin.Context) {
 		_, err := strconv.ParseBool(c.Request.Header.Get(httpserver.HTTPHeaderAllowInt64))
 		if err != nil {
