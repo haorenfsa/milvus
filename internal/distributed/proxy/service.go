@@ -31,6 +31,7 @@ import (
 	"time"
 
 	"github.com/cockroachdb/errors"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -195,6 +196,7 @@ func (s *Server) startHTTPServer(errChan chan error) {
 	// 	},
 	// })
 	ginHandler.Use(gin.Recovery())
+	ginHandler.Use(gzip.Gzip(gzip.DefaultCompression))
 	ginHandler.Use(func(c *gin.Context) {
 		_, err := strconv.ParseBool(c.Request.Header.Get(httpserver.HTTPHeaderAllowInt64))
 		if err != nil {
