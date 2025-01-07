@@ -131,12 +131,15 @@ func newMinioClient(ctx context.Context, c *config) (*minio.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	minIOClient.TraceOn(nil)
 	var bucketExists bool
 	// check valid in first query
 	checkBucketFn := func() error {
 		bucketExists, err = minIOClient.BucketExists(ctx, c.bucketName)
 		if err != nil {
-			log.Warn("failed to check blob bucket exist", zap.String("bucket", c.bucketName), zap.Error(err))
+			log.Warn("failed to check blob bucket exist", zap.String("bucket", c.bucketName),
+				zap.String("err detail", fmt.Sprintf("%+v", err)),
+				zap.String("minioOpts", fmt.Sprintf("%+v", minioOpts)))
 			return err
 		}
 		if !bucketExists {
