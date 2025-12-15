@@ -33,8 +33,10 @@ import (
 	"github.com/cockroachdb/errors"
 
 	"github.com/milvus-io/milvus/internal/storagecommon"
+	"github.com/milvus-io/milvus/pkg/v2/log"
 	"github.com/milvus-io/milvus/pkg/v2/proto/indexcgopb"
 	"github.com/milvus-io/milvus/pkg/v2/proto/indexpb"
+	"go.uber.org/zap"
 )
 
 func NewPackedWriter(filePaths []string, schema *arrow.Schema, bufferSize int64, multiPartUploadSize int64, columnGroups []storagecommon.ColumnGroup, storageConfig *indexpb.StorageConfig, storagePluginContext *indexcgopb.StoragePluginContext) (*PackedWriter, error) {
@@ -142,6 +144,16 @@ func (pw *PackedWriter) WriteRecordBatch(recordBatch arrow.Record) error {
 	var cas cdata.CArrowSchema
 	cdata.ExportArrowSchema(recordBatch.Schema(), &cas)
 	cSchema := (*C.struct_ArrowSchema)(unsafe.Pointer(&cas))
+
+	if recordBatch.NumCols() == 0 || len(cArrays) == 0 || len(cSchemas) == 0 {
+		log.Warn("record batch has no columns",
+			zap.Any("recordBatchSchema", recordBatch.Schema().String()),
+			zap.Any("recordBatchColumns", recordBatch.NumCols()),
+			zap.Any("recordBatchRows", recordBatch.NumRows()),
+			zap.Any("cArrays", len(cArrays)),
+			zap.Any("cSchemas", len(cSchemas)),
+		)
+	}
 
 	status := C.WriteRecordBatch(pw.cPackedWriter, &cArrays[0], &cSchemas[0], cSchema)
 	if err := ConsumeCStatusIntoError(&status); err != nil {
