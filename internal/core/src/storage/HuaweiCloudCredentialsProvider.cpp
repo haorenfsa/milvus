@@ -159,6 +159,13 @@ HuaweiCloudSTSAssumeRoleWebIdentityCredentialsProvider::Reload() {
         STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
         "Successfully retrieved credentials with AWS_ACCESS_KEY: "
             << result.creds.GetAWSAccessKeyId());
+
+    auto expiration = result.creds.GetExpiration();
+    auto now = Aws::Utils::DateTime::Now();
+    auto duration_count = (expiration - now).count();
+    LOG_INFO("Successfully retrieved credentials with AWS_ACCESS_KEY: {}, expiration_count_diff_ms: {}",
+                std::string(result.creds.GetAWSAccessKeyId().c_str()),
+                duration_count);    
     m_credentials = result.creds;
 }
 
