@@ -37,7 +37,7 @@ HuaweiCloudSTSCredentialsClient::HuaweiCloudSTSCredentialsClient(
     m_token_endpoint =
         "https://iam.{region}.myhuaweicloud.com/v3.0/OS-AUTH/id-token/tokens";
     m_httpClient = Aws::Http::CreateHttpClient(clientConfiguration);
-    AWS_LOGSTREAM_INFO(
+    LOG_INFO(
         STS_RESOURCE_CLIENT_LOG_TAG,
         "Creating STS ResourceClient with endpoint: " << m_token_endpoint);
 }
@@ -91,7 +91,7 @@ HuaweiCloudSTSCredentialsClient::GetAssumeRoleWithWebIdentityCredentials(
     auto responseCode = awsResult.GetResponseCode();
     if (responseCode != Aws::Http::HttpResponseCode::OK &&
         responseCode != Aws::Http::HttpResponseCode::CREATED) {
-        AWS_LOGSTREAM_WARN(STS_RESOURCE_CLIENT_LOG_TAG,
+        LOG_WARN(STS_RESOURCE_CLIENT_LOG_TAG,
                            "Failed to get credentials token from Huawei Cloud "
                            "STS, response code: "
                                << static_cast<int>(responseCode));
@@ -101,7 +101,7 @@ HuaweiCloudSTSCredentialsClient::GetAssumeRoleWithWebIdentityCredentials(
     auto responseHeaders = awsResult.GetHeaderValueCollection();
     auto subjectTokenIter = responseHeaders.find("x-subject-token");
     if (subjectTokenIter == responseHeaders.end()) {
-        AWS_LOGSTREAM_WARN(
+        LOG_WARN(
             STS_RESOURCE_CLIENT_LOG_TAG,
             "No x-subject-token in huawei cloud sts response headers");
         return result;
@@ -110,7 +110,7 @@ HuaweiCloudSTSCredentialsClient::GetAssumeRoleWithWebIdentityCredentials(
     const Aws::String subjectToken = subjectTokenIter->second;
     auto stsResult = callHuaweiCloudSTS(subjectToken, request);
     if (!stsResult.success) {
-        AWS_LOGSTREAM_WARN(STS_RESOURCE_CLIENT_LOG_TAG,
+        LOG_WARN(STS_RESOURCE_CLIENT_LOG_TAG,
                            "Failed to get credentials from Huawei Cloud STS: "
                                << stsResult.errorMessage);
         return result;

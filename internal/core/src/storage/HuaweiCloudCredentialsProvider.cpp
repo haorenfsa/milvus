@@ -55,36 +55,36 @@ HuaweiCloudSTSAssumeRoleWebIdentityCredentialsProvider::
     }
 
     if (m_tokenFile.empty()) {
-        AWS_LOGSTREAM_WARN(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
+        LOG_WARN(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
                            "Token file must be specified to use STS AssumeRole "
                            "web identity creds provider.");
         return;  // No need to do further constructing
     } else {
-        AWS_LOGSTREAM_DEBUG(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
+        LOG_DEBUG(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
                             "Resolved token_file from profile_config or "
                             "environment variable to be "
                                 << m_tokenFile);
     }
 
     if (m_roleArn.empty()) {
-        AWS_LOGSTREAM_WARN(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
+        LOG_WARN(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
                            "RoleArn must be specified to use STS AssumeRole "
                            "web identity creds provider.");
         return;  // No need to do further constructing
     } else {
-        AWS_LOGSTREAM_DEBUG(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
+        LOG_DEBUG(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
                             "Resolved role_arn from profile_config or "
                             "environment variable to be "
                                 << m_roleArn);
     }
 
     if (m_region.empty()) {
-        AWS_LOGSTREAM_WARN(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
+        LOG_WARN(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
                            "Region must be specified to use STS AssumeRole "
                            "web identity creds provider.");
         return;  // No need to do further constructing
     } else {
-        AWS_LOGSTREAM_DEBUG(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
+        LOG_DEBUG(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
                             "Resolved region from profile_config or "
                             "environment variable to be "
                                 << m_region);
@@ -93,7 +93,7 @@ HuaweiCloudSTSAssumeRoleWebIdentityCredentialsProvider::
     if (m_sessionName.empty()) {
         m_sessionName = Aws::Utils::UUID::RandomUUID();
     } else {
-        AWS_LOGSTREAM_DEBUG(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
+        LOG_DEBUG(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
                             "Resolved session_name from profile_config or "
                             "environment variable to be "
                                 << m_sessionName);
@@ -116,7 +116,7 @@ HuaweiCloudSTSAssumeRoleWebIdentityCredentialsProvider::
     m_client = Aws::MakeUnique<Aws::Internal::HuaweiCloudSTSCredentialsClient>(
         STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG, config);
     m_initialized = true;
-    AWS_LOGSTREAM_INFO(
+    LOG_INFO(
         STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
         "Creating STS AssumeRole with web identity creds provider.");
 }
@@ -133,7 +133,7 @@ HuaweiCloudSTSAssumeRoleWebIdentityCredentialsProvider::GetAWSCredentials() {
 
 void
 HuaweiCloudSTSAssumeRoleWebIdentityCredentialsProvider::Reload() {
-    AWS_LOGSTREAM_INFO(
+    LOG_INFO(
         STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
         "Credentials have expired, attempting to renew from STS.");
 
@@ -146,7 +146,7 @@ HuaweiCloudSTSAssumeRoleWebIdentityCredentialsProvider::Reload() {
         }
         m_token = token;
     } else {
-        AWS_LOGSTREAM_ERROR(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
+        LOG_ERROR(STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
                             "Can't open token file: " << m_tokenFile);
         return;
     }
@@ -155,7 +155,7 @@ HuaweiCloudSTSAssumeRoleWebIdentityCredentialsProvider::Reload() {
             m_region, m_providerId, m_token, m_roleArn, m_sessionName};
 
     auto result = m_client->GetAssumeRoleWithWebIdentityCredentials(request);
-    AWS_LOGSTREAM_TRACE(
+    LOG_TRACE(
         STS_ASSUME_ROLE_WEB_IDENTITY_LOG_TAG,
         "Successfully retrieved credentials with AWS_ACCESS_KEY: "
             << result.creds.GetAWSAccessKeyId());
