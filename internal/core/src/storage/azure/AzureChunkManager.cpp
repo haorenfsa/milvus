@@ -83,7 +83,7 @@ AzureChunkManager::AzureChunkManager(const StorageConfig& storage_config)
         ThrowAzureError(
             "PreCheck",
             err,
-            "precheck chunk manager client failed, error:{}, configuration:{}",
+            "precheck azure chunk manager client failed, error:{}, configuration:{}",
             err.what(),
             storage_config.ToString());
     }
