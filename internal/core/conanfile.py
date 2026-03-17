@@ -14,7 +14,7 @@ class MilvusConan(ConanFile):
         "snappy/1.1.9#0519333fef284acd04806243de7d3070",
         "arrow/17.0.0@milvus/dev-2.6#7af258a853e20887f9969f713110aac8",
         "openssl/3.1.2#02594c4c0a6e2b4feb3cd15119993597",
-        "aws-sdk-cpp/1.11.352@milvus/dev",
+        "aws-sdk-cpp/1.8.130@milvus/dev",
         "googleapis/cci.20221108#65604e1b3b9a6b363044da625b201a2a",
         "gtest/1.13.0#f9548be18a41ccc6367efcb8146e92be",
         "benchmark/1.7.0#459f3bb1a64400a886ba43047576df3c",
@@ -75,7 +75,7 @@ class MilvusConan(ConanFile):
         "aws-sdk-cpp:config": True,
         "aws-sdk-cpp:text-to-speech": False,
         "aws-sdk-cpp:transfer": False,
-        "aws-sdk-cpp:s3-crt": False,
+        # s3-crt option removed: 1.8.x does not have CRT support
         "gtest:build_gmock": True,
         "boost:without_locale": False,
         "boost:without_test": True,
